@@ -104,6 +104,12 @@ export interface Evaluacion {
 
 // ── API namespaces ───────────────────────────────────────────────
 export const api = {
+  // Métodos genéricos para llamadas ad-hoc
+  get:    <T>(path: string)               => request<T>(path),
+  post:   <T>(path: string, body: unknown)=> request<T>(path, { method: 'POST',   body: JSON.stringify(body) }),
+  put:    <T>(path: string, body: unknown)=> request<T>(path, { method: 'PUT',    body: JSON.stringify(body) }),
+  delete: (path: string)                  => request<void>(path, { method: 'DELETE' }),
+
   auth: {
     login: (email: string, password: string) =>
       request<LoginResponse>('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }, { skipAuthRedirect: true }),
@@ -164,6 +170,26 @@ export const api = {
   evaluaciones: {
     list: (p: { page?: number; size?: number; id_alumno_evaluador?: number } = {}) =>
       request<PaginatedResponse<Evaluacion>>(`/evaluaciones${qs(p)}`),
+    create: (d: { id_exposicion: number; id_alumno_evaluador: number; detalles: { id_criterio: number; calificacion: number }[] }) =>
+      request<Evaluacion>('/evaluaciones', { method: 'POST', body: JSON.stringify(d) }),
     remove: (id: number) => request<void>(`/evaluaciones/${id}`, { method: 'DELETE' }),
+    byExposicion: (id: number) => request<Evaluacion[]>(`/exposiciones/${id}/evaluaciones`),
   },
+}
+
+// ── Tipos derivados para vistas de alumno ────────────────────────
+export interface GrupoAlumno {
+  id_grupo: number; nombre_grupo: string; ciclo_escolar: string
+  id_materia: number; nombre_materia: string; clave_materia: string
+}
+export interface EquipoAlumno {
+  id_equipo: number; nombre_equipo: string; id_grupo: number
+  nombre_grupo: string; ciclo_escolar: string
+  id_materia: number; nombre_materia: string; clave_materia: string
+  alumnos: Alumno[]
+}
+
+export const alumnoApi = {
+  misGrupos:  (id: number) => request<GrupoAlumno[]>(`/alumnos/${id}/grupos`),
+  misEquipos: (id: number) => request<EquipoAlumno[]>(`/alumnos/${id}/equipos`),
 }
