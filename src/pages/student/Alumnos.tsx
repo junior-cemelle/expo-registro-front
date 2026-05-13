@@ -39,6 +39,14 @@ export default function StudentAlumnos() {
         <p className="text-white/40 text-sm mt-0.5">Compañeros en tus grupos</p>
       </div>
 
+      {grupos.length === 0 && (
+        <div className="py-16 text-center rounded-2xl" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <Icon name="group_off" className="text-[48px] text-white/15 block mx-auto mb-3" />
+          <p className="text-white/40 font-medium">No estás inscrito en ningún grupo</p>
+          <p className="text-white/25 text-sm mt-1">Contacta a tu docente para ser asignado</p>
+        </div>
+      )}
+
       {grupos.map((g) => {
         const alumnos = grupoAlumnos[g.id_grupo] ?? []
         const myEquipo = equipos.find((e) => e.id_grupo === g.id_grupo)

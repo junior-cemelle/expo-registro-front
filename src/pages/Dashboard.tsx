@@ -121,14 +121,27 @@ function StudentDashboard() {
                   <span className="material-symbols-rounded text-[15px]" style={{ color, fontVariationSettings: "'FILL' 1" }}>{icon}</span>
                 </div>
               </div>
-              <p className="text-2xl font-bold text-white">{loading || base ? '—' : value}</p>
+              {loading || base
+                ? <div className="h-8 w-16 rounded-lg bg-white/[0.08] animate-pulse mt-1" />
+                : <p className="text-2xl font-bold text-white">{value}</p>
+              }
             </Link>
           </motion.div>
         ))}
       </motion.div>
 
+      {/* Mis equipos — skeleton while loading */}
+      {(loading || base) && (
+        <section className="space-y-3 animate-pulse">
+          <div className="h-4 w-28 rounded bg-white/[0.08]" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {[1,2].map(i => <div key={i} className="h-28 rounded-2xl bg-white/[0.04]" />)}
+          </div>
+        </section>
+      )}
+
       {/* Mis equipos */}
-      {equipos.length > 0 && (
+      {!loading && !base && equipos.length > 0 && (
         <section className="space-y-3">
           <h2 className="text-sm font-semibold text-white/60 flex items-center gap-2">
             <Icon name="diversity_3" className="text-emerald-400 text-[17px]" filled />

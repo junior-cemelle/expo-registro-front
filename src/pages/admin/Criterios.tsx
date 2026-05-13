@@ -64,7 +64,7 @@ export default function AdminCriterios() {
   const [deleteItem, setDeleteItem] = useState<Criterio | null>(null)
 
   const crud = useCrud<Criterio>({
-    fetch: (page) => api.criterios.list({ page, size: 10 }),
+    fetch: (page, search) => api.criterios.list({ page, size: 10, nombre_criterio: search || undefined }),
   })
 
   useEffect(() => { crud.load() }, [])
@@ -89,6 +89,16 @@ export default function AdminCriterios() {
     <div className="space-y-5">
       <PageHeader title="Criterios" description="Rúbrica de evaluación de exposiciones" icon="checklist"
         onAdd={() => { setEditItem(null); setModalOpen(true) }} addLabel="Nuevo criterio" />
+
+      <div className="relative">
+        <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-[18px] pointer-events-none" />
+        <input
+          className="glass-input w-full h-9 rounded-xl pl-9 pr-3 text-sm"
+          placeholder="Buscar criterio..."
+          value={crud.search}
+          onChange={(e) => crud.changeSearch(e.target.value)}
+        />
+      </div>
 
       <DataTable
         columns={COLUMNS}

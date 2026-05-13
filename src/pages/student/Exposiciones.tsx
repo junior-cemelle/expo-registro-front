@@ -165,8 +165,17 @@ export default function StudentExposiciones() {
           <p className="text-white/40 text-sm mt-0.5">Todas las exposiciones de tus grupos — evalúa las de otros equipos</p>
         </div>
 
+        {grupos.length === 0 && (
+          <div className="py-16 text-center rounded-2xl" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <Icon name="present_to_all" className="text-[48px] text-white/15 block mx-auto mb-3" />
+            <p className="text-white/40 font-medium">No estás inscrito en ningún grupo</p>
+            <p className="text-white/25 text-sm mt-1">Las exposiciones aparecerán aquí cuando seas asignado a un grupo</p>
+          </div>
+        )}
+
         {grupos.map((g) => {
           const sections = data[g.id_grupo] ?? []
+          const totalExpos = sections.reduce((s, sec) => s + sec.expos.length, 0)
           return (
             <section key={g.id_grupo} className="space-y-5">
               {/* Header grupo */}
@@ -177,8 +186,11 @@ export default function StudentExposiciones() {
                 <span className="text-[11px] text-white/30">{g.nombre_materia}</span>
               </div>
 
-              {sections.length === 0 ? (
-                <p className="text-sm text-white/25 pl-2">Sin exposiciones registradas en este grupo</p>
+              {(sections.length === 0 || totalExpos === 0) ? (
+                <div className="py-10 text-center rounded-2xl" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <Icon name="inbox" className="text-[36px] text-white/15 block mx-auto mb-2" />
+                  <p className="text-white/30 text-sm">Sin exposiciones registradas en este grupo aún</p>
+                </div>
               ) : (
                 sections.map((sec) => {
                   const isMine = myEquipoIds.has((sec as unknown as { id_equipo: number }).id_equipo)
