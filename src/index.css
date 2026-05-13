@@ -5,6 +5,12 @@
 @layer base {
   *, *::before, *::after { box-sizing: border-box; }
 
+  /* Reserve scrollbar space permanently → background never shifts when scrollbar appears */
+  html {
+    scrollbar-gutter: stable;
+    overflow-y: scroll;
+  }
+
   body {
     font-family: 'Google Sans', 'DM Sans', system-ui, sans-serif;
     @apply bg-slate-950 text-white antialiased;

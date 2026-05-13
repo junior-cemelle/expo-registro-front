@@ -74,8 +74,8 @@ export default function Register() {
       {/* Fondo */}
       <div className="fixed inset-0" style={{ background: 'linear-gradient(135deg, #0a0f1e 0%, #0d1340 35%, #1a0a2e 65%, #0f172a 100%)' }} />
       <RotatingBackground />
-      <div className="fixed inset-0 bg-black/62" />
-      <div className="fixed inset-0" style={{ background: 'linear-gradient(135deg, rgba(6,10,24,0.55) 0%, rgba(13,19,58,0.35) 50%, rgba(15,23,42,0.50) 100%)' }} />
+      <div className="fixed inset-0 bg-black/75" />
+      <div className="fixed inset-0" style={{ background: 'linear-gradient(135deg, rgba(6,10,24,0.60) 0%, rgba(13,19,58,0.40) 50%, rgba(15,23,42,0.55) 100%)' }} />
       <ConstellationCanvas options={{ length: 70, distance: 120, velocity: 0.1 }} />
 
       {/* Tarjeta */}
