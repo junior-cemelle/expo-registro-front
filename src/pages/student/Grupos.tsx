@@ -1,9 +1,20 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useStudentData } from '@/hooks/useStudentData'
 import Icon from '@/components/Icon'
 
 export default function StudentGrupos() {
   const { grupos, equipos, loading } = useStudentData()
+  const [search, setSearch] = useState('')
+
+  const q = search.toLowerCase()
+  const filtered = search
+    ? grupos.filter((g) =>
+        g.nombre_grupo.toLowerCase().includes(q) ||
+        g.nombre_materia?.toLowerCase().includes(q) ||
+        g.ciclo_escolar.toLowerCase().includes(q)
+      )
+    : grupos
 
   if (loading) return (
     <div className="space-y-4 animate-pulse">
@@ -18,11 +29,17 @@ export default function StudentGrupos() {
         <p className="text-white/40 text-sm mt-0.5">Grupos escolares en los que estás inscrito</p>
       </div>
 
+      {grupos.length > 0 && (
+        <SearchInput value={search} onChange={setSearch} placeholder="Buscar por grupo, materia o ciclo..." />
+      )}
+
       {grupos.length === 0 ? (
-        <Empty />
+        <Empty text="No estás inscrito en ningún grupo" />
+      ) : filtered.length === 0 ? (
+        <Empty text={`Sin resultados para "${search}"`} />
       ) : (
         <div className="space-y-4">
-          {grupos.map((g, i) => {
+          {filtered.map((g, i) => {
             const equipo = equipos.find((e) => e.id_grupo === g.id_grupo)
             return (
               <motion.div
@@ -84,11 +101,30 @@ export default function StudentGrupos() {
   )
 }
 
-function Empty() {
+function Empty({ text }: { text: string }) {
   return (
     <div className="py-16 text-center">
       <Icon name="groups" className="text-[48px] text-white/15 block mx-auto mb-3" />
-      <p className="text-white/30 text-sm">No estás inscrito en ningún grupo</p>
+      <p className="text-white/30 text-sm">{text}</p>
+    </div>
+  )
+}
+
+function SearchInput({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder?: string }) {
+  return (
+    <div className="relative">
+      <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-[18px] pointer-events-none" />
+      <input
+        className="glass-input w-full h-9 rounded-xl pl-9 pr-9 text-sm"
+        placeholder={placeholder ?? 'Buscar...'}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      {value && (
+        <button onClick={() => onChange('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">
+          <Icon name="close" className="text-[16px]" />
+        </button>
+      )}
     </div>
   )
 }

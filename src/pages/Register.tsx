@@ -7,6 +7,7 @@ import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import { api } from '@/lib/api'
 import ConstellationCanvas from '@/components/ConstellationCanvas'
+import RotatingBackground from '@/components/RotatingBackground'
 import Icon from '@/components/Icon'
 
 const schema = z.object({
@@ -71,13 +72,9 @@ export default function Register() {
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden py-8">
       {/* Fondo */}
-      <div className="fixed inset-0" style={{
-        background: 'linear-gradient(135deg, #0a0f1e 0%, #0d1340 35%, #1a0a2e 65%, #0f172a 100%)',
-        backgroundImage: 'url(/resources/bg-login.jpg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }} />
-      <div className="fixed inset-0 bg-gradient-to-br from-slate-950/80 via-indigo-950/60 to-slate-900/75" />
+      <div className="fixed inset-0" style={{ background: 'linear-gradient(135deg, #0a0f1e 0%, #0d1340 35%, #1a0a2e 65%, #0f172a 100%)' }} />
+      <RotatingBackground />
+      <div className="fixed inset-0 bg-gradient-to-br from-slate-950/82 via-indigo-950/65 to-slate-900/78" />
       <ConstellationCanvas options={{ length: 70, distance: 120, velocity: 0.1 }} />
 
       {/* Tarjeta */}

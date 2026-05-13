@@ -7,6 +7,7 @@ export default function StudentEquipos() {
   const { grupos, equipos: misEquipos, loading: base } = useStudentData()
   const [grupoEquipos, setGrupoEquipos] = useState<Record<number, Equipo[]>>({})
   const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     if (base || grupos.length === 0) return
@@ -35,8 +36,16 @@ export default function StudentEquipos() {
         <p className="text-white/40 text-sm mt-0.5">Equipos de todos tus grupos — el tuyo resaltado</p>
       </div>
 
+      {grupos.length > 0 && (
+        <SearchInput value={search} onChange={setSearch} placeholder="Buscar equipo por nombre..." />
+      )}
+
       {grupos.map((g) => {
-        const equipos = grupoEquipos[g.id_grupo] ?? []
+        const q = search.toLowerCase()
+        const allEquipos = grupoEquipos[g.id_grupo] ?? []
+        const equipos = search
+          ? allEquipos.filter((e) => e.nombre_equipo.toLowerCase().includes(q))
+          : allEquipos
         return (
           <section key={g.id_grupo}>
             <div className="flex items-center gap-2 mb-4">
@@ -95,6 +104,25 @@ export default function StudentEquipos() {
           </section>
         )
       })}
+    </div>
+  )
+}
+
+function SearchInput({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder?: string }) {
+  return (
+    <div className="relative">
+      <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-[18px] pointer-events-none" />
+      <input
+        className="glass-input w-full h-9 rounded-xl pl-9 pr-9 text-sm"
+        placeholder={placeholder ?? 'Buscar...'}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      {value && (
+        <button onClick={() => onChange('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">
+          <Icon name="close" className="text-[16px]" />
+        </button>
+      )}
     </div>
   )
 }

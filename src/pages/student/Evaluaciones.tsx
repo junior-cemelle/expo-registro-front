@@ -20,6 +20,7 @@ export default function StudentEvaluaciones() {
   const [misExpos,   setMisExpos]   = useState<Exposicion[]>([])
   const [loading, setLoading] = useState(true)
   const [expandEval, setExpandEval] = useState<number | null>(null)
+  const [search, setSearch] = useState('')
 
   const load = useCallback(async () => {
     if (base || !user) return
@@ -56,6 +57,23 @@ export default function StudentEvaluaciones() {
         <p className="text-white/40 text-sm mt-0.5">Evaluaciones que realizaste y cómo evaluaron a tu equipo</p>
       </div>
 
+      {misEvals.length > 0 && (
+        <div className="relative">
+          <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-[18px] pointer-events-none" />
+          <input
+            className="glass-input w-full h-9 rounded-xl pl-9 pr-9 text-sm"
+            placeholder="Filtrar por exposición #ID o fecha..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          {search && (
+            <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">
+              <Icon name="close" className="text-[16px]" />
+            </button>
+          )}
+        </div>
+      )}
+
       {/* ── Evaluaciones realizadas ── */}
       <section className="space-y-4">
         <h2 className="flex items-center gap-2 text-sm font-semibold text-white/70">
@@ -67,57 +85,7 @@ export default function StudentEvaluaciones() {
         {misEvals.length === 0 ? (
           <Empty text="Aún no has evaluado ninguna exposición" />
         ) : (
-          <div className="space-y-3">
-            {misEvals.map((ev) => {
-              const open = expandEval === ev.id_evaluacion
-              return (
-                <motion.div
-                  key={ev.id_evaluacion}
-                  className="rounded-2xl overflow-hidden"
-                  style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
-                >
-                  <button
-                    className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-white/[0.02] transition-colors text-left"
-                    onClick={() => setExpandEval(open ? null : ev.id_evaluacion)}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Icon name="present_to_all" className="text-brand-400 text-[18px]" filled />
-                      <div>
-                        <p className="text-sm font-medium text-white/80">Exposición #{ev.id_exposicion}</p>
-                        <p className="text-[11px] text-white/35 mt-0.5">{new Date(ev.fecha_evaluacion).toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' })}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className={`text-lg font-bold ${scoreColor(ev.promedio)}`}>{ev.promedio.toFixed(2)}</span>
-                      <Icon name={open ? 'expand_less' : 'expand_more'} className="text-white/30 text-[20px]" />
-                    </div>
-                  </button>
-
-                  {open && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="px-5 pb-4 border-t border-white/[0.06]"
-                    >
-                      <div className="pt-3 space-y-2">
-                        {ev.detalles.map((d) => (
-                          <div key={d.id_criterio} className="flex items-center gap-3">
-                            <span className="text-[12px] text-white/50 min-w-0 flex-1 truncate">{d.nombre_criterio ?? `Criterio ${d.id_criterio}`}</span>
-                            <div className="flex items-center gap-2 flex-shrink-0">
-                              <div className="w-24 h-1.5 rounded-full bg-white/[0.08] overflow-hidden">
-                                <div className="h-full rounded-full bg-brand-500" style={{ width: `${(d.calificacion / 10) * 100}%` }} />
-                              </div>
-                              <span className={`text-xs font-semibold w-8 text-right ${scoreColor(d.calificacion)}`}>{d.calificacion}</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </motion.div>
-              )
-            })}
-          </div>
+          <EvalList evals={misEvals} search={search} expandEval={expandEval} setExpandEval={setExpandEval} />
         )}
       </section>
 
@@ -214,6 +182,74 @@ export default function StudentEvaluaciones() {
           </div>
         )}
       </section>
+    </div>
+  )
+}
+
+function EvalList({ evals, search, expandEval, setExpandEval }: {
+  evals: Evaluacion[]; search: string
+  expandEval: number | null; setExpandEval: (id: number | null) => void
+}) {
+  const q = search.toLowerCase()
+  const filtered = search
+    ? evals.filter((ev) => `#${ev.id_exposicion}`.includes(q) || ev.fecha_evaluacion.includes(q))
+    : evals
+
+  if (filtered.length === 0) {
+    return <Empty text={`Sin resultados para "${search}"`} />
+  }
+
+  return (
+    <div className="space-y-3">
+      {filtered.map((ev) => {
+        const open = expandEval === ev.id_evaluacion
+        return (
+          <motion.div
+            key={ev.id_evaluacion}
+            className="rounded-2xl overflow-hidden"
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
+          >
+            <button
+              className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-white/[0.02] transition-colors text-left"
+              onClick={() => setExpandEval(open ? null : ev.id_evaluacion)}
+            >
+              <div className="flex items-center gap-3">
+                <Icon name="present_to_all" className="text-brand-400 text-[18px]" filled />
+                <div>
+                  <p className="text-sm font-medium text-white/80">Exposición #{ev.id_exposicion}</p>
+                  <p className="text-[11px] text-white/35 mt-0.5">{new Date(ev.fecha_evaluacion).toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' })}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className={`text-lg font-bold ${scoreColor(ev.promedio)}`}>{ev.promedio.toFixed(2)}</span>
+                <Icon name={open ? 'expand_less' : 'expand_more'} className="text-white/30 text-[20px]" />
+              </div>
+            </button>
+
+            {open && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="px-5 pb-4 border-t border-white/[0.06]"
+              >
+                <div className="pt-3 space-y-2">
+                  {ev.detalles.map((d) => (
+                    <div key={d.id_criterio} className="flex items-center gap-3">
+                      <span className="text-[12px] text-white/50 min-w-0 flex-1 truncate">{d.nombre_criterio ?? `Criterio ${d.id_criterio}`}</span>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <div className="w-24 h-1.5 rounded-full bg-white/[0.08] overflow-hidden">
+                          <div className="h-full rounded-full bg-brand-500" style={{ width: `${(d.calificacion / 10) * 100}%` }} />
+                        </div>
+                        <span className={`text-xs font-semibold w-8 text-right ${scoreColor(d.calificacion)}`}>{d.calificacion}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </motion.div>
+        )
+      })}
     </div>
   )
 }

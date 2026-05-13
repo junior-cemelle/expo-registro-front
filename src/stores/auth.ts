@@ -6,6 +6,7 @@ interface AuthState {
   token: string | null
   user: User | null
   setAuth: (token: string, user: User) => void
+  setUser: (user: User) => void
   logout: () => void
 }
 
@@ -18,6 +19,7 @@ export const useAuthStore = create<AuthState>()(
         document.cookie = `auth-token=${token}; path=/; max-age=86400; samesite=lax`
         set({ token, user })
       },
+      setUser: (user) => set({ user }),
       logout: () => {
         document.cookie = 'auth-token=; path=/; max-age=0'
         set({ token: null, user: null })
