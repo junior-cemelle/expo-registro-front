@@ -81,9 +81,14 @@ export default function Login() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.15, duration: 0.4 }}
-            className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-600 shadow-xl shadow-brand-600/40 mb-4 animate-float"
+            className="mb-4 animate-float"
           >
-            <Icon name="school" className="text-white text-[28px]" filled />
+            <img
+              src="/resources/logo_lince.png"
+              alt="ExpoRegistro"
+              className="h-24 w-auto object-contain mx-auto"
+              style={{ filter: 'drop-shadow(0 4px 20px rgba(99,102,241,0.55)) drop-shadow(0 0 8px rgba(99,102,241,0.3))' }}
+            />
           </motion.div>
           <h1 className="text-xl font-semibold text-white tracking-tight">ExpoRegistro</h1>
           <p className="text-sm text-white/45 mt-1">Sistema de gestión de exposiciones académicas</p>
