@@ -128,7 +128,7 @@ export const api = {
   },
 
   grupos: {
-    list: (p: { page?: number; size?: number; id_materia?: number; ciclo_escolar?: string } = {}) =>
+    list: (p: { page?: number; size?: number; id_materia?: number; ciclo_escolar?: string; nombre_grupo?: string } = {}) =>
       request<PaginatedResponse<Grupo>>(`/grupos${qs(p)}`),
     create: (d: GrupoInput)              => request<Grupo>('/grupos',     { method: 'POST', body: JSON.stringify(d) }),
     update: (id: number, d: GrupoInput)  => request<Grupo>(`/grupos/${id}`, { method: 'PUT',  body: JSON.stringify(d) }),
@@ -144,7 +144,7 @@ export const api = {
   },
 
   equipos: {
-    list: (p: { page?: number; size?: number; id_grupo?: number } = {}) =>
+    list: (p: { page?: number; size?: number; id_grupo?: number; nombre_equipo?: string } = {}) =>
       request<PaginatedResponse<Equipo>>(`/equipos${qs(p)}`),
     create: (d: EquipoInput)              => request<Equipo>('/equipos',     { method: 'POST', body: JSON.stringify(d) }),
     update: (id: number, d: EquipoInput)  => request<Equipo>(`/equipos/${id}`, { method: 'PUT',  body: JSON.stringify(d) }),
@@ -152,7 +152,7 @@ export const api = {
   },
 
   exposiciones: {
-    list: (p: { page?: number; size?: number; id_equipo?: number } = {}) =>
+    list: (p: { page?: number; size?: number; id_equipo?: number; tema?: string } = {}) =>
       request<PaginatedResponse<Exposicion>>(`/exposiciones${qs(p)}`),
     create: (d: ExposicionInput)              => request<Exposicion>('/exposiciones',     { method: 'POST', body: JSON.stringify(d) }),
     update: (id: number, d: ExposicionInput)  => request<Exposicion>(`/exposiciones/${id}`, { method: 'PUT',  body: JSON.stringify(d) }),
@@ -160,7 +160,7 @@ export const api = {
   },
 
   criterios: {
-    list: (p: { page?: number; size?: number } = {}) =>
+    list: (p: { page?: number; size?: number; nombre_criterio?: string } = {}) =>
       request<PaginatedResponse<Criterio>>(`/criterios${qs(p)}`),
     create: (d: CriterioInput)              => request<Criterio>('/criterios',     { method: 'POST', body: JSON.stringify(d) }),
     update: (id: number, d: CriterioInput)  => request<Criterio>(`/criterios/${id}`, { method: 'PUT',  body: JSON.stringify(d) }),

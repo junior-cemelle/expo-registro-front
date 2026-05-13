@@ -65,7 +65,7 @@ export default function AdminEquipos() {
   const [grupos,     setGrupos]     = useState<Grupo[]>([])
 
   const crud = useCrud<Equipo>({
-    fetch: (page) => api.equipos.list({ page, size: 10 }),
+    fetch: (page, search) => api.equipos.list({ page, size: 10, nombre_equipo: search || undefined }),
   })
 
   useEffect(() => {
@@ -93,6 +93,16 @@ export default function AdminEquipos() {
     <div className="space-y-5">
       <PageHeader title="Equipos" description="Equipos de trabajo dentro de cada grupo" icon="diversity_3"
         onAdd={() => { setEditItem(null); setModalOpen(true) }} addLabel="Nuevo equipo" />
+
+      <div className="relative">
+        <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-[18px] pointer-events-none" />
+        <input
+          className="glass-input w-full h-9 rounded-xl pl-9 pr-3 text-sm"
+          placeholder="Buscar equipo..."
+          value={crud.search}
+          onChange={(e) => crud.changeSearch(e.target.value)}
+        />
+      </div>
 
       <DataTable columns={COLUMNS} data={(crud.data?.content ?? []) as unknown as Record<string, unknown>[]}
         loading={crud.loading} page={crud.data?.page ?? 0} totalPages={crud.data?.totalPages ?? 0}
