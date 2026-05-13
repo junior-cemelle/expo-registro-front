@@ -19,8 +19,9 @@ export default function DashboardLayout() {
       {/* Rotating landscape images */}
       <RotatingBackground />
 
-      {/* Dark overlay for readability */}
-      <div className="fixed inset-0 bg-gradient-to-br from-slate-950/88 via-slate-900/82 to-indigo-950/85" />
+      {/* Dark overlay — keeps text readable over any landscape photo */}
+      <div className="fixed inset-0 bg-black/62" />
+      <div className="fixed inset-0" style={{ background: 'linear-gradient(160deg, rgba(6,10,24,0.55) 0%, rgba(10,22,40,0.35) 50%, rgba(13,26,58,0.50) 100%)' }} />
 
       <ConstellationCanvas options={{
         starColor: 'rgba(180,190,255,0.5)',
