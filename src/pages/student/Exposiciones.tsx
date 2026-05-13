@@ -124,6 +124,7 @@ export default function StudentExposiciones() {
   const [evalSet, setEvalSet] = useState<Set<number>>(new Set())
   const [loading, setLoading] = useState(true)
   const [target, setTarget]   = useState<Exposicion | null>(null)
+  const [search, setSearch]   = useState('')
 
   const myEquipoIds = new Set(misEquipos.map((e) => e.id_equipo))
 
@@ -165,6 +166,23 @@ export default function StudentExposiciones() {
           <p className="text-white/40 text-sm mt-0.5">Todas las exposiciones de tus grupos — evalúa las de otros equipos</p>
         </div>
 
+        {grupos.length > 0 && (
+          <div className="relative">
+            <span className="material-symbols-rounded absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-[18px] pointer-events-none">search</span>
+            <input
+              className="glass-input w-full h-9 rounded-xl pl-9 pr-9 text-sm"
+              placeholder="Buscar por tema..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            {search && (
+              <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">
+                <span className="material-symbols-rounded text-[16px]">close</span>
+              </button>
+            )}
+          </div>
+        )}
+
         {grupos.length === 0 && (
           <div className="py-16 text-center rounded-2xl" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
             <Icon name="present_to_all" className="text-[48px] text-white/15 block mx-auto mb-3" />
@@ -174,7 +192,11 @@ export default function StudentExposiciones() {
         )}
 
         {grupos.map((g) => {
-          const sections = data[g.id_grupo] ?? []
+          const rawSections = data[g.id_grupo] ?? []
+          const q = search.toLowerCase()
+          const sections = search
+            ? rawSections.map((sec) => ({ ...sec, expos: sec.expos.filter((e) => e.tema.toLowerCase().includes(q)) })).filter((sec) => sec.expos.length > 0)
+            : rawSections
           const totalExpos = sections.reduce((s, sec) => s + sec.expos.length, 0)
           return (
             <section key={g.id_grupo} className="space-y-5">

@@ -7,6 +7,7 @@ export default function StudentAlumnos() {
   const { user, grupos, equipos, loading: baseLoading } = useStudentData()
   const [grupoAlumnos, setGrupoAlumnos] = useState<Record<number, Alumno[]>>({})
   const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     if (baseLoading || grupos.length === 0) return
@@ -39,6 +40,10 @@ export default function StudentAlumnos() {
         <p className="text-white/40 text-sm mt-0.5">Compañeros en tus grupos</p>
       </div>
 
+      {grupos.length > 0 && (
+        <SearchInput value={search} onChange={setSearch} placeholder="Buscar por nombre, apellido o número de control..." />
+      )}
+
       {grupos.length === 0 && (
         <div className="py-16 text-center rounded-2xl" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
           <Icon name="group_off" className="text-[48px] text-white/15 block mx-auto mb-3" />
@@ -48,7 +53,15 @@ export default function StudentAlumnos() {
       )}
 
       {grupos.map((g) => {
-        const alumnos = grupoAlumnos[g.id_grupo] ?? []
+        const allAlumnos = grupoAlumnos[g.id_grupo] ?? []
+        const q = search.toLowerCase()
+        const alumnos = search
+          ? allAlumnos.filter((a) =>
+              a.nombre.toLowerCase().includes(q) ||
+              a.apellido.toLowerCase().includes(q) ||
+              a.numero_control.toLowerCase().includes(q)
+            )
+          : allAlumnos
         const myEquipo = equipos.find((e) => e.id_grupo === g.id_grupo)
 
         return (
@@ -111,6 +124,25 @@ export default function StudentAlumnos() {
           </section>
         )
       })}
+    </div>
+  )
+}
+
+function SearchInput({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder?: string }) {
+  return (
+    <div className="relative">
+      <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-[18px] pointer-events-none" />
+      <input
+        className="glass-input w-full h-9 rounded-xl pl-9 pr-9 text-sm"
+        placeholder={placeholder ?? 'Buscar...'}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      {value && (
+        <button onClick={() => onChange('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">
+          <Icon name="close" className="text-[16px]" />
+        </button>
+      )}
     </div>
   )
 }

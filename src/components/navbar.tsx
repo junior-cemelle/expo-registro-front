@@ -33,23 +33,25 @@ export default function Navbar({ onMenuOpen }: NavbarProps) {
 
   return (
     <header className="sticky top-0 z-30 glass-dark border-b border-white/[0.07]">
-      <div className="flex h-16 items-center justify-between px-4 sm:px-6">
+      <div className="flex h-16 items-center gap-3 px-4 sm:px-6">
 
         {/* Hamburger — mobile only */}
         <button
           onClick={onMenuOpen}
-          className="lg:hidden rounded-xl p-2 text-white/50 hover:bg-white/[0.08] hover:text-white transition-colors"
+          className="lg:hidden flex-shrink-0 rounded-xl p-2 text-white/50 hover:bg-white/[0.08] hover:text-white transition-colors"
           aria-label="Abrir menú"
         >
           <Icon name="menu" className="text-[24px]" />
         </button>
 
-        {/* Logo — desktop only (sidebar shows logo on mobile) */}
-        <Link to="/dashboard" className="hidden lg:flex items-center gap-2.5 group">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-brand-600 shadow-lg shadow-brand-600/40 transition-transform group-hover:scale-110">
-            <Icon name="school" className="text-white text-[18px]" filled />
-          </div>
-          <span className="text-[15px] font-semibold tracking-tight text-white">
+        {/* Logo — visible on all screen sizes */}
+        <Link to="/dashboard" className="flex items-center gap-2.5 group flex-shrink-0">
+          <img
+            src="/resources/logo_lince.png"
+            alt="Lince"
+            className="h-9 w-auto object-contain drop-shadow-[0_2px_8px_rgba(99,102,241,0.4)]"
+          />
+          <span className="text-[15px] font-semibold tracking-tight text-white hidden sm:block">
             Expo<span className="text-brand-400">Registro</span>
           </span>
         </Link>
@@ -85,6 +87,7 @@ export default function Navbar({ onMenuOpen }: NavbarProps) {
               sideOffset={8}
               className="z-50 min-w-[240px] overflow-hidden rounded-2xl border border-white/10 bg-slate-900/95 backdrop-blur-xl p-2 shadow-2xl"
             >
+              {/* User info */}
               <div className="px-3 py-3 mb-1">
                 <div className="flex items-center gap-3">
                   <Avatar.Root className="h-11 w-11 overflow-hidden rounded-full flex-shrink-0">
@@ -111,9 +114,14 @@ export default function Navbar({ onMenuOpen }: NavbarProps) {
 
               <div className="h-px bg-white/[0.07] mx-1 mb-1" />
 
-              <DropdownMenu.Item className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm text-white/65 outline-none cursor-pointer hover:bg-white/[0.07] hover:text-white transition-colors">
-                <Icon name="settings" className="text-[18px] text-white/35" />
-                Configuración
+              <DropdownMenu.Item asChild>
+                <Link
+                  to="/perfil"
+                  className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm text-white/65 outline-none cursor-pointer hover:bg-white/[0.07] hover:text-white transition-colors"
+                >
+                  <Icon name="manage_accounts" className="text-[18px] text-white/35" />
+                  Mi perfil
+                </Link>
               </DropdownMenu.Item>
 
               <div className="h-px bg-white/[0.07] mx-1 my-1" />

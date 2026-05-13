@@ -30,12 +30,74 @@ interface SidebarProps {
   onClose: () => void
 }
 
-function SidebarContent({ onClose }: { onClose?: () => void }) {
+function NavLinks({ onClose }: { onClose?: () => void }) {
+  const { pathname } = useLocation()
+  const isActive = (to: string) => pathname === to || pathname.startsWith(to + '/')
+  const { user } = useAuthStore()
+  const isAdmin = user?.rol === 'admin'
+
+  return (
+    <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
+      <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-widest text-white/25">
+        Navegación
+      </p>
+
+      {NAV_BASE.map(({ to, label, icon }) => {
+        const active = isActive(to)
+        return (
+          <Link
+            key={to}
+            to={to}
+            onClick={onClose}
+            className={[
+              'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
+              active
+                ? 'bg-brand-600/20 text-brand-300'
+                : 'text-white/55 hover:bg-white/[0.06] hover:text-white',
+            ].join(' ')}
+          >
+            <Icon name={icon} className="text-[20px] flex-shrink-0" filled={active} />
+            {label}
+          </Link>
+        )
+      })}
+
+      {isAdmin && (
+        <>
+          <div className="pt-5 pb-2">
+            <p className="px-3 text-[10px] font-semibold uppercase tracking-widest text-violet-400/50">
+              Administración
+            </p>
+          </div>
+          {NAV_ADMIN.map(({ to, label, icon }) => {
+            const active = isActive(to)
+            return (
+              <Link
+                key={to}
+                to={to}
+                onClick={onClose}
+                className={[
+                  'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
+                  active
+                    ? 'bg-violet-600/20 text-violet-300'
+                    : 'text-white/55 hover:bg-violet-500/[0.07] hover:text-violet-300',
+                ].join(' ')}
+              >
+                <Icon name={icon} className="text-[20px] flex-shrink-0" filled={active} />
+                {label}
+              </Link>
+            )
+          })}
+        </>
+      )}
+    </nav>
+  )
+}
+
+function UserFooter({ onClose }: { onClose?: () => void }) {
   const { user, logout } = useAuthStore()
-  const { pathname }     = useLocation()
-  const navigate         = useNavigate()
-  const isAdmin          = user?.rol === 'admin'
-  const initials         = user ? `${user.nombre[0]}${user.apellido[0]}`.toUpperCase() : '?'
+  const navigate = useNavigate()
+  const initials = user ? `${user.nombre[0]}${user.apellido[0]}`.toUpperCase() : '?'
 
   const handleLogout = () => {
     logout()
@@ -43,121 +105,39 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
     navigate('/login', { replace: true })
   }
 
-  const isActive = (to: string) => pathname === to || pathname.startsWith(to + '/')
-
   return (
-    <div className="flex flex-col h-full">
-      {/* ── Header ── */}
-      <div className="flex items-center justify-between px-5 h-16 border-b border-white/[0.07] flex-shrink-0">
-        <Link to="/dashboard" onClick={onClose} className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-brand-600 shadow-lg shadow-brand-600/40">
-            <Icon name="school" className="text-white text-[18px]" filled />
-          </div>
-          <span className="text-[15px] font-semibold text-white tracking-tight">
-            Expo<span className="text-brand-400">Registro</span>
-          </span>
-        </Link>
-        {onClose && (
-          <button
-            onClick={onClose}
-            className="lg:hidden rounded-xl p-1.5 text-white/40 hover:bg-white/[0.08] hover:text-white transition-colors"
-            aria-label="Cerrar menú"
-          >
-            <Icon name="close" className="text-[22px]" />
-          </button>
-        )}
-      </div>
-
-      {/* ── Nav ── */}
-      <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
-        <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-widest text-white/25">
-          Navegación
-        </p>
-
-        {NAV_BASE.map(({ to, label, icon }) => {
-          const active = isActive(to)
-          return (
-            <Link
-              key={to}
-              to={to}
-              onClick={onClose}
-              className={[
-                'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
-                active
-                  ? 'bg-brand-600/20 text-brand-300'
-                  : 'text-white/55 hover:bg-white/[0.06] hover:text-white',
-              ].join(' ')}
-            >
-              <Icon name={icon} className="text-[20px] flex-shrink-0" filled={active} />
-              {label}
-            </Link>
-          )
-        })}
-
-        {isAdmin && (
-          <>
-            <div className="pt-5 pb-2">
-              <p className="px-3 text-[10px] font-semibold uppercase tracking-widest text-violet-400/50">
-                Administración
-              </p>
-            </div>
-            {NAV_ADMIN.map(({ to, label, icon }) => {
-              const active = isActive(to)
-              return (
-                <Link
-                  key={to}
-                  to={to}
-                  onClick={onClose}
-                  className={[
-                    'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
-                    active
-                      ? 'bg-violet-600/20 text-violet-300'
-                      : 'text-white/55 hover:bg-violet-500/[0.07] hover:text-violet-300',
-                  ].join(' ')}
-                >
-                  <Icon name={icon} className="text-[20px] flex-shrink-0" filled={active} />
-                  {label}
-                </Link>
-              )
-            })}
-          </>
-        )}
-      </nav>
-
-      {/* ── User footer ── */}
-      <div className="border-t border-white/[0.07] p-4 flex-shrink-0">
-        <div className="flex items-center gap-3 mb-3 p-2 rounded-xl bg-white/[0.04]">
-          <Avatar.Root className="h-9 w-9 overflow-hidden rounded-full flex-shrink-0">
-            <Avatar.Fallback className="flex h-full w-full items-center justify-center rounded-full bg-brand-600 text-sm font-bold text-white">
-              {initials}
-            </Avatar.Fallback>
-          </Avatar.Root>
-          <div className="min-w-0">
-            <p className="text-[13px] font-semibold text-white truncate">
-              {user ? `${user.nombre} ${user.apellido}` : '—'}
-            </p>
-            <p className="text-[11px] text-white/40 truncate">{user?.email}</p>
-            {user?.rol && (
-              <span className={`mt-1 inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full ${ROL_COLOR[user.rol]}`}>
-                {ROL_LABEL[user.rol]}
-              </span>
-            )}
-          </div>
+    <div className="border-t border-white/[0.07] p-4 flex-shrink-0">
+      <div className="flex items-center gap-3 mb-3 p-2 rounded-xl bg-white/[0.04]">
+        <Avatar.Root className="h-9 w-9 overflow-hidden rounded-full flex-shrink-0">
+          <Avatar.Fallback className="flex h-full w-full items-center justify-center rounded-full bg-brand-600 text-sm font-bold text-white">
+            {initials}
+          </Avatar.Fallback>
+        </Avatar.Root>
+        <div className="min-w-0">
+          <p className="text-[13px] font-semibold text-white truncate">
+            {user ? `${user.nombre} ${user.apellido}` : '—'}
+          </p>
+          <p className="text-[11px] text-white/40 truncate">{user?.email}</p>
+          {user?.rol && (
+            <span className={`mt-1 inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full ${ROL_COLOR[user.rol]}`}>
+              {ROL_LABEL[user.rol]}
+            </span>
+          )}
         </div>
-
-        <button
-          onClick={handleLogout}
-          className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors"
-        >
-          <Icon name="logout" className="text-[20px]" />
-          Cerrar sesión
-        </button>
       </div>
+
+      <button
+        onClick={handleLogout}
+        className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors"
+      >
+        <Icon name="logout" className="text-[20px]" />
+        Cerrar sesión
+      </button>
     </div>
   )
 }
 
-const SIDEBAR_STYLE = {
+const PANEL_STYLE = {
   background:           'rgba(6, 10, 24, 0.97)',
   backdropFilter:       'blur(24px)',
   WebkitBackdropFilter: 'blur(24px)',
@@ -167,7 +147,7 @@ const SIDEBAR_STYLE = {
 export default function Sidebar({ open, onClose }: SidebarProps) {
   return (
     <>
-      {/* ── Mobile backdrop ── */}
+      {/* Mobile backdrop */}
       {open && (
         <div
           className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
@@ -176,11 +156,13 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
       )}
 
       {/* ── Desktop: always-visible persistent sidebar ── */}
-      <aside
-        className="hidden lg:flex fixed left-0 top-0 h-full w-64 flex-col z-30"
-        style={SIDEBAR_STYLE}
-      >
-        <SidebarContent />
+      <aside className="hidden lg:flex fixed left-0 top-0 h-full w-64 flex-col z-30" style={PANEL_STYLE}>
+        {/* Desktop top spacer — aligns with navbar height */}
+        <div className="h-16 border-b border-white/[0.07] flex items-center px-5 flex-shrink-0">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/20">Menú</p>
+        </div>
+        <NavLinks />
+        <UserFooter />
       </aside>
 
       {/* ── Mobile: slide-in overlay ── */}
@@ -190,9 +172,23 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           'transition-transform duration-300 ease-in-out',
           open ? 'translate-x-0' : '-translate-x-full',
         ].join(' ')}
-        style={SIDEBAR_STYLE}
+        style={PANEL_STYLE}
       >
-        <SidebarContent onClose={onClose} />
+        {/* Mobile header — app name + close button */}
+        <div className="flex items-center justify-between px-5 h-16 border-b border-white/[0.07] flex-shrink-0">
+          <span className="text-[15px] font-semibold text-white tracking-tight">
+            Expo<span className="text-brand-400">Registro</span>
+          </span>
+          <button
+            onClick={onClose}
+            className="rounded-xl p-1.5 text-white/40 hover:bg-white/[0.08] hover:text-white transition-colors"
+            aria-label="Cerrar menú"
+          >
+            <Icon name="close" className="text-[22px]" />
+          </button>
+        </div>
+        <NavLinks onClose={onClose} />
+        <UserFooter onClose={onClose} />
       </aside>
     </>
   )

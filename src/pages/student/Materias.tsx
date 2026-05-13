@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useStudentData } from '@/hooks/useStudentData'
 import Icon from '@/components/Icon'
@@ -6,12 +7,21 @@ const item = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } }
 
 export default function StudentMaterias() {
   const { grupos, equipos, loading } = useStudentData()
+  const [search, setSearch] = useState('')
 
-  // Deduplica materias (un alumno puede estar en 2 grupos de la misma materia en distintos ciclos)
   const materias = grupos.map((g) => {
     const equipo = equipos.find((e) => e.id_grupo === g.id_grupo)
     return { ...g, equipo }
   })
+
+  const q = search.toLowerCase()
+  const filtered = search
+    ? materias.filter((m) =>
+        m.nombre_materia.toLowerCase().includes(q) ||
+        m.clave_materia.toLowerCase().includes(q) ||
+        m.nombre_grupo.toLowerCase().includes(q)
+      )
+    : materias
 
   if (loading) return <LoadingSkeleton />
 
@@ -22,15 +32,21 @@ export default function StudentMaterias() {
         <p className="text-white/40 text-sm mt-0.5">Materias en las que tienes registro activo</p>
       </div>
 
+      {materias.length > 0 && (
+        <SearchInput value={search} onChange={setSearch} placeholder="Buscar por materia, clave o grupo..." />
+      )}
+
       {materias.length === 0 ? (
         <Empty text="No estás registrado en ninguna materia" />
+      ) : filtered.length === 0 ? (
+        <Empty text={`Sin resultados para "${search}"`} />
       ) : (
         <motion.div
           variants={{ show: { transition: { staggerChildren: 0.07 } } }}
           initial="hidden" animate="show"
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
         >
-          {materias.map((m) => (
+          {filtered.map((m) => (
             <motion.div
               key={m.id_grupo}
               variants={item}
@@ -112,6 +128,28 @@ function Empty({ text }: { text: string }) {
     <div className="py-16 text-center">
       <Icon name="inbox" className="text-[48px] text-white/15 block mx-auto mb-3" />
       <p className="text-white/30 text-sm">{text}</p>
+    </div>
+  )
+}
+
+function SearchInput({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder?: string }) {
+  return (
+    <div className="relative">
+      <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-[18px] pointer-events-none" />
+      <input
+        className="glass-input w-full h-9 rounded-xl pl-9 pr-9 text-sm"
+        placeholder={placeholder ?? 'Buscar...'}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      {value && (
+        <button
+          onClick={() => onChange('')}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors"
+        >
+          <Icon name="close" className="text-[16px]" />
+        </button>
+      )}
     </div>
   )
 }

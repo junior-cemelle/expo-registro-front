@@ -3,8 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom'
 import Navbar from '@/components/navbar'
 import Sidebar from '@/components/Sidebar'
 import ConstellationCanvas from '@/components/ConstellationCanvas'
-
-const BG_LOCAL = '/resources/bg-dashboard.jpg'
+import RotatingBackground from '@/components/RotatingBackground'
 
 export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -14,15 +13,14 @@ export default function DashboardLayout() {
 
   return (
     <div className="relative min-h-screen">
-      {/* Background */}
-      <div
-        className="fixed inset-0 bg-cover bg-center"
-        style={{
-          background: 'linear-gradient(160deg, #060d1f 0%, #0a1628 40%, #0d1a3a 70%, #08101e 100%)',
-          backgroundImage: `url(${BG_LOCAL})`,
-        }}
-      />
-      <div className="fixed inset-0 bg-gradient-to-br from-slate-950/90 via-slate-900/85 to-indigo-950/82" />
+      {/* Base gradient (always visible) */}
+      <div className="fixed inset-0" style={{ background: 'linear-gradient(160deg, #060d1f 0%, #0a1628 40%, #0d1a3a 70%, #08101e 100%)' }} />
+
+      {/* Rotating landscape images */}
+      <RotatingBackground />
+
+      {/* Dark overlay for readability */}
+      <div className="fixed inset-0 bg-gradient-to-br from-slate-950/88 via-slate-900/82 to-indigo-950/85" />
 
       <ConstellationCanvas options={{
         starColor: 'rgba(180,190,255,0.5)',
@@ -32,10 +30,8 @@ export default function DashboardLayout() {
         velocity: 0.08,
       }} />
 
-      {/* Sidebar */}
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      {/* Main — offset by sidebar width on desktop */}
       <div className="relative z-10 flex flex-col min-h-screen lg:pl-64">
         <Navbar onMenuOpen={() => setSidebarOpen(true)} />
         <main className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 py-8 flex-1">

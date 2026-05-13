@@ -7,6 +7,7 @@ import DashboardLayout from '@/layouts/DashboardLayout'
 import Dashboard from '@/pages/Dashboard'
 import Login     from '@/pages/Login'
 import Register  from '@/pages/Register'
+import Perfil    from '@/pages/Perfil'
 
 // Admin CRUD
 import AdminMaterias     from '@/pages/admin/Materias'
@@ -103,6 +104,7 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/perfil"    element={<Perfil />} />
 
             {/* Vistas con switcher admin/alumno */}
             <Route path="/materias"     element={<RoleSwitch admin={<AdminMaterias />}     student={<StudentMaterias />} />} />

@@ -8,11 +8,8 @@ import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth'
 import { api } from '@/lib/api'
 import ConstellationCanvas from '@/components/ConstellationCanvas'
+import RotatingBackground from '@/components/RotatingBackground'
 import Icon from '@/components/Icon'
-
-// Imagen local (opcional): coloca tu foto en public/resources/bg-login.jpg para usarla
-// Si no existe, se mostrará el gradiente definido en el CSS
-const BG_LOCAL = '/resources/bg-login.jpg'
 
 const schema = z.object({
   email:    z.string().email('Ingresa un correo válido'),
@@ -52,16 +49,12 @@ export default function Login() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Fondo: gradiente base siempre visible + imagen local si existe */}
-      <div
-        className="fixed inset-0 bg-cover bg-center scale-105"
-        style={{
-          background: 'linear-gradient(135deg, #0a0f1e 0%, #0d1340 35%, #1a0a2e 65%, #0f172a 100%)',
-          backgroundImage: `url(${BG_LOCAL})`,
-        }}
-      />
+      {/* Base gradient */}
+      <div className="fixed inset-0" style={{ background: 'linear-gradient(135deg, #0a0f1e 0%, #0d1340 35%, #1a0a2e 65%, #0f172a 100%)' }} />
+      {/* Rotating images */}
+      <RotatingBackground />
       {/* Overlay */}
-      <div className="fixed inset-0 bg-gradient-to-br from-slate-950/80 via-indigo-950/60 to-slate-900/75" />
+      <div className="fixed inset-0 bg-gradient-to-br from-slate-950/82 via-indigo-950/65 to-slate-900/78" />
 
       {/* Constelaciones */}
       <ConstellationCanvas options={{ length: 80, distance: 130, velocity: 0.12 }} />
